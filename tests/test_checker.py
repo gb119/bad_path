@@ -339,7 +339,7 @@ class TestPathChecker:
         assert checker.is_sensitive_path is False
 
     def test_is_sensitive_path_property_dangerous(self):
-        """Test is_sensitive_path property returns True for dangerous paths."""
+        """Test is_sensitive_path property returns False for system paths."""
         system = platform.system()
         
         if system == "Windows":
@@ -348,7 +348,8 @@ class TestPathChecker:
             dangerous_path = "/etc/passwd"
         
         checker = PathChecker(dangerous_path)
-        assert checker.is_sensitive_path is True
+        # System paths should NOT show as sensitive (user-defined)
+        assert checker.is_sensitive_path is False
 
     def test_path_property(self):
         """Test that path property returns the original path."""
@@ -404,7 +405,7 @@ class TestPathChecker:
         # Can check both that it's dangerous and get details
         assert checker  # It's dangerous
         assert checker.is_system_path  # It's a system path
-        assert checker.is_sensitive_path  # It's a sensitive path
+        assert not checker.is_sensitive_path  # It's NOT a user-defined path
 
     def test_with_user_defined_path(self):
         """Test PathChecker with user-defined dangerous paths."""
@@ -415,8 +416,8 @@ class TestPathChecker:
         try:
             checker = PathChecker(f"{test_path}/file.txt")
             assert checker  # Should be dangerous
-            assert checker.is_system_path
-            assert checker.is_sensitive_path
+            assert not checker.is_system_path  # Not a system path
+            assert checker.is_sensitive_path  # IS a user-defined path
         finally:
             # Cleanup
             clear_user_paths()
@@ -432,5 +433,64 @@ class TestPathChecker:
         
         checker = PathChecker(dangerous_path)
         assert checker
+
+    def test_distinction_system_vs_user_paths(self):
+        """Test that is_system_path and is_sensitive_path are properly distinguished."""
+        system = platform.system()
+        
+        # Test with a system path
+        if system == "Windows":
+            system_path = "C:\\Windows\\System32\\test.txt"
+        else:
+            system_path = "/etc/passwd"
+        
+        checker_system = PathChecker(system_path)
+        assert checker_system.is_system_path is True
+        assert checker_system.is_sensitive_path is False
+        
+        # Test with a user-defined path
+        user_path = "/custom/sensitive/data"
+        add_user_path(user_path)
+        
+        try:
+            checker_user = PathChecker(f"{user_path}/file.txt")
+            assert checker_user.is_system_path is False
+            assert checker_user.is_sensitive_path is True
+        finally:
+            clear_user_paths()
+
+    def test_both_system_and_user_path(self):
+        """Test a path that is both a system path and user-defined."""
+        system = platform.system()
+        
+        if system == "Windows":
+            path_to_add = "C:\\Windows"
+        else:
+            path_to_add = "/etc"
+        
+        # Add a system path as user-defined too
+        add_user_path(path_to_add)
+        
+        try:
+            checker = PathChecker(f"{path_to_add}/test.txt")
+            # Should be flagged as both
+            assert checker.is_system_path is True
+            assert checker.is_sensitive_path is True
+            assert checker  # Should be dangerous
+        finally:
+            clear_user_paths()
+
+    def test_only_user_defined_not_system(self):
+        """Test that user-defined paths work for non-system locations."""
+        custom_path = "/home/user/my_sensitive_project"
+        add_user_path(custom_path)
+        
+        try:
+            checker = PathChecker(f"{custom_path}/secret.txt")
+            assert checker  # Should be dangerous
+            assert checker.is_system_path is False  # Not a system path
+            assert checker.is_sensitive_path is True  # But is user-defined
+        finally:
+            clear_user_paths()
 
 

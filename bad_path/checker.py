@@ -134,10 +134,14 @@ class PathChecker:
     The class can be used in boolean context where it evaluates to True
     if the path is dangerous, False otherwise.
 
+    The class distinguishes between platform-specific system paths and
+    user-defined sensitive paths through separate properties.
+
     Example:
         checker = PathChecker("/etc/passwd")
         if checker:
             print(f"Dangerous path! System path: {checker.is_system_path}")
+            print(f"User-defined: {checker.is_sensitive_path}")
     """
 
     def __init__(self, path: Union[str, Path]):
@@ -149,17 +153,34 @@ class PathChecker:
         """
         self._path = path
         self._path_obj = Path(path).resolve()
-        self._dangerous_paths = get_dangerous_paths()
-        self._is_dangerous = self._check_if_dangerous()
 
-    def _check_if_dangerous(self) -> bool:
+        # Get system paths separately from user paths
+        match platform.system():
+            case "Windows":
+                from .platforms.windows import system_paths
+            case "Darwin":
+                from .platforms.darwin import system_paths
+            case _:  # Linux and other Unix-like systems
+                from .platforms.posix import system_paths
+
+        self._system_paths = system_paths
+        self._user_paths = get_user_paths()
+
+        # Check both types
+        self._is_system_path = self._check_against_paths(self._system_paths)
+        self._is_user_path = self._check_against_paths(self._user_paths)
+
+    def _check_against_paths(self, paths: List[str]) -> bool:
         """
-        Internal method to check if the path is dangerous.
+        Internal method to check if the path matches any in the given list.
+
+        Args:
+            paths: List of paths to check against
 
         Returns:
-            True if the path is dangerous, False otherwise.
+            True if the path matches any in the list, False otherwise.
         """
-        for dangerous in self._dangerous_paths:
+        for dangerous in paths:
             try:
                 dangerous_obj = Path(dangerous).resolve()
                 # Check if path is the dangerous path or a subdirectory of it
@@ -174,6 +195,9 @@ class PathChecker:
         """
         Return True if the path is dangerous, False otherwise.
 
+        A path is considered dangerous if it matches either a platform-specific
+        system path or a user-defined sensitive path.
+
         This allows the class to be used in boolean context:
             if PathChecker("/etc/passwd"):
                 print("Dangerous!")
@@ -181,29 +205,32 @@ class PathChecker:
         Returns:
             True if the path is dangerous, False otherwise.
         """
-        return self._is_dangerous
+        return self._is_system_path or self._is_user_path
 
     @property
     def is_system_path(self) -> bool:
         """
-        Check if the path is within a system directory.
+        Check if the path is within a platform-specific system directory.
+
+        This checks against OS-specific dangerous paths like /etc, /bin on
+        Linux/Unix, C:\\Windows on Windows, or /System on macOS.
 
         Returns:
-            True if the path is within a system directory, False otherwise.
+            True if the path is within a platform system directory, False otherwise.
         """
-        return self._is_dangerous
+        return self._is_system_path
 
     @property
     def is_sensitive_path(self) -> bool:
         """
-        Check if the path points to a sensitive location.
+        Check if the path matches a user-defined sensitive location.
 
-        This is an alias for is_system_path for semantic clarity.
+        This checks against paths added by the user via add_user_path().
 
         Returns:
-            True if the path is sensitive, False otherwise.
+            True if the path matches a user-defined sensitive path, False otherwise.
         """
-        return self._is_dangerous
+        return self._is_user_path
 
     @property
     def path(self) -> Union[str, Path]:
@@ -222,7 +249,8 @@ class PathChecker:
         Returns:
             String representation showing path and danger status.
         """
-        status = "dangerous" if self._is_dangerous else "safe"
+        is_dangerous = self._is_system_path or self._is_user_path
+        status = "dangerous" if is_dangerous else "safe"
         return f"PathChecker('{self._path}', {status})"
 
 

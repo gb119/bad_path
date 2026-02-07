@@ -24,7 +24,8 @@ The simplest way to check if a path is dangerous:
 Using the PathChecker Class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``PathChecker`` class provides a more detailed interface:
+The ``PathChecker`` class provides a more detailed interface that distinguishes
+between platform-specific system paths and user-defined sensitive paths:
 
 .. code-block:: python
 
@@ -37,14 +38,17 @@ The ``PathChecker`` class provides a more detailed interface:
    if checker:
        print("This is a dangerous path!")
        print(f"Is system path: {checker.is_system_path}")
-       print(f"Is sensitive path: {checker.is_sensitive_path}")
+       print(f"Is user-defined sensitive: {checker.is_sensitive_path}")
 
    # Access the original path
    print(f"Checked path: {checker.path}")
 
 The ``PathChecker`` class evaluates to ``True`` when used in boolean context
-if the path is dangerous, and ``False`` otherwise. This allows you to not only
-detect dangerous paths but also get details about why they are dangerous.
+if the path is dangerous (either a system path or user-defined), and ``False``
+otherwise. The ``is_system_path`` property checks against platform-specific
+dangerous paths (like ``/etc``, ``/bin`` on Linux, or ``C:\\Windows`` on Windows),
+while ``is_sensitive_path`` checks against user-defined paths added via
+``add_user_path()``.
 
 Raising Exceptions
 ~~~~~~~~~~~~~~~~~~
@@ -114,9 +118,9 @@ Using PathChecker for Detailed Feedback
        if checker:
            reasons = []
            if checker.is_system_path:
-               reasons.append("it's a system path")
+               reasons.append("it's a platform-specific system path")
            if checker.is_sensitive_path:
-               reasons.append("it's a sensitive location")
+               reasons.append("it's a user-defined sensitive location")
            print(f"❌ Cannot use {path} because {' and '.join(reasons)}")
            return False
        

@@ -55,8 +55,8 @@ from bad_path import PathChecker
 checker = PathChecker("/etc/passwd")
 if checker:
     print(f"Dangerous path detected!")
-    print(f"System path: {checker.is_system_path}")
-    print(f"Sensitive: {checker.is_sensitive_path}")
+    print(f"Platform system path: {checker.is_system_path}")
+    print(f"User-defined sensitive path: {checker.is_sensitive_path}")
 ```
 
 ## Features
