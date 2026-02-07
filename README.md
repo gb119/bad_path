@@ -73,6 +73,7 @@ print(f"Creatable: {checker.is_creatable}")
 - ✅ Simple API for checking dangerous paths
 - ✅ Object-oriented `PathChecker` class with detailed information
 - ✅ Path accessibility checks (read, write, create permissions)
+- ✅ **Invalid character detection** (platform-specific)
 - ✅ Customizable error handling
 - ✅ Lightweight with no external dependencies
 - ✅ Works with both strings and `pathlib.Path` objects
@@ -133,6 +134,31 @@ def safe_to_write(filepath):
 # Usage
 safe_to_write("/tmp/myfile.txt")  # True - safe and creatable
 safe_to_write("/etc/passwd")       # False - dangerous location
+```
+
+### Checking for Invalid Characters
+
+```python
+from bad_path import PathChecker
+
+# Check if a path contains invalid characters for the platform
+checker = PathChecker("/tmp/test\x00file.txt")  # Null byte is invalid on all platforms
+print(f"Has invalid characters: {checker.has_invalid_chars}")  # True
+print(f"Is safe: {bool(checker)}")  # False - dangerous due to invalid char
+
+# Platform-specific invalid characters:
+# - POSIX (Linux): null byte (\0)
+# - macOS (Darwin): null byte (\0) and colon (:)
+# - Windows: < > : " | ? * and control characters (0-31)
+#            Also checks for reserved names: CON, PRN, AUX, NUL, COM1-9, LPT1-9
+
+# Windows example - reserved name check
+checker = PathChecker("C:\\tmp\\CON.txt")  # CON is a reserved name
+print(f"Has invalid characters: {checker.has_invalid_chars}")  # True on Windows
+
+# Paths ending with space or period are invalid on Windows
+checker = PathChecker("C:\\tmp\\file. ")
+print(f"Has invalid characters: {checker.has_invalid_chars}")  # True on Windows
 ```
 
 ## Documentation
