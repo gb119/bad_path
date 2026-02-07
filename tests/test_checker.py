@@ -588,26 +588,27 @@ class TestPathCheckerCall:
             check_path = "/test/path/file.txt"
             safe_path = "/tmp/safe.txt"
         
-        # Add user path first
-        add_user_path(test_path)
+        # Create checker with user paths empty
+        checker = PathChecker(safe_path)
+        assert not checker  # Safe path
+        
+        # Store the original user paths reference
+        original_user_paths = checker._user_paths
         
         try:
-            # Create checker
-            checker = PathChecker(safe_path)
-            assert not checker  # Safe path
+            # Add a user path after creating the checker
+            add_user_path(test_path)
             
-            # Remove the user path
-            remove_user_path(test_path)
-            
-            # Call with the path that was removed - should still check against old paths
-            # Since paths are not reloaded, it won't see the removal
-            # This is a bit tricky - the path was removed from global list
-            # but checker still has it in _user_paths
+            # Call with a path - should use existing _user_paths (not reload)
+            # So it won't see the newly added path
             result = checker(check_path)
-            # The path should not be dangerous because we removed it and call with path uses existing _user_paths
-            # Wait, actually the checker was created after we added it, so _user_paths would have it
-            # Let's approach this differently
-            pass
+            
+            # The path should not be dangerous because checker didn't reload
+            # and still has the old (empty) user paths
+            assert result is False
+            
+            # Verify that _user_paths wasn't reloaded
+            assert checker._user_paths is original_user_paths
         finally:
             clear_user_paths()
 
