@@ -16,7 +16,8 @@ common_paths = [
 system_paths = common_paths + [
     "/System",
     "/Library",
-    "/private",
+    "/private/etc",  # System configuration (don't use /private to allow /private/tmp)
+    "/private/var",  # System variables/logs (but /private/var/tmp is safe)
     "/var",
     "/usr",
     "/Applications",
