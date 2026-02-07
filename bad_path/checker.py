@@ -153,10 +153,6 @@ class PathChecker:
         """
         self._path = path
         self._path_obj = Path(path).resolve()
-        self._system_paths = None
-        self._user_paths = None
-        self._is_system_path = None
-        self._is_user_path = None
         
         # Load paths and check the initial path
         self._load_and_check_paths()
@@ -181,21 +177,25 @@ class PathChecker:
         self._is_system_path = self._check_against_paths(self._system_paths)
         self._is_user_path = self._check_against_paths(self._user_paths)
 
-    def _check_against_paths(self, paths: List[str]) -> bool:
+    def _check_against_paths(self, paths: List[str], path_obj: Path = None) -> bool:
         """
-        Internal method to check if the path matches any in the given list.
+        Internal method to check if a path matches any in the given list.
 
         Args:
             paths: List of paths to check against
+            path_obj: Optional Path object to check. If not provided, uses self._path_obj
 
         Returns:
             True if the path matches any in the list, False otherwise.
         """
+        if path_obj is None:
+            path_obj = self._path_obj
+            
         for dangerous in paths:
             try:
                 dangerous_obj = Path(dangerous).resolve()
                 # Check if path is the dangerous path or a subdirectory of it
-                if self._path_obj == dangerous_obj or dangerous_obj in self._path_obj.parents:
+                if path_obj == dangerous_obj or dangerous_obj in path_obj.parents:
                     return True
             except (OSError, ValueError):
                 # Handle cases where path resolution fails
@@ -223,19 +223,11 @@ class PathChecker:
         """
         if path is not None:
             # Check the new path against existing paths (no reload)
-            old_path = self._path
-            old_path_obj = self._path_obj
-            
-            self._path = path
-            self._path_obj = Path(path).resolve()
+            path_obj = Path(path).resolve()
             
             # Check against existing paths
-            is_sys_path = self._check_against_paths(self._system_paths)
-            is_usr_path = self._check_against_paths(self._user_paths)
-            
-            # Restore original path
-            self._path = old_path
-            self._path_obj = old_path_obj
+            is_sys_path = self._check_against_paths(self._system_paths, path_obj)
+            is_usr_path = self._check_against_paths(self._user_paths, path_obj)
             
             return is_sys_path or is_usr_path
         else:
