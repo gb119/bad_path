@@ -261,17 +261,26 @@ class PathChecker:
         # Windows-specific checks
         if platform.system() == "Windows":
             # Check for reserved names (case-insensitive)
-            # Extract the filename without path and extension
-            path_obj = Path(path_str)
-            name_without_ext = path_obj.stem.upper()
+            # Extract the filename from the path using string operations
+            # to avoid Path() issues with invalid characters
+            # Split by both forward slash and backslash
+            path_parts = path_str.replace("\\", "/").split("/")
+            if path_parts:
+                filename = path_parts[-1]
 
-            # Check if the name (without extension) is a reserved name
-            if name_without_ext in self._reserved_names:
-                return True
+                # Extract name without extension
+                if "." in filename:
+                    name_without_ext = filename.rsplit(".", 1)[0].upper()
+                else:
+                    name_without_ext = filename.upper()
 
-            # Check if path ends with space or period (invalid in Windows)
-            if path_obj.name and (path_obj.name.endswith(" ") or path_obj.name.endswith(".")):
-                return True
+                # Check if the name (without extension) is a reserved name
+                if name_without_ext in self._reserved_names:
+                    return True
+
+                # Check if filename ends with space or period (invalid in Windows)
+                if filename and (filename.endswith(" ") or filename.endswith(".")):
+                    return True
 
         return False
 

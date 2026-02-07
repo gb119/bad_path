@@ -17,18 +17,22 @@ system_paths = [
 # Invalid characters in Windows file names
 # Note: Windows has strict restrictions on characters that can be used in file names.
 # These characters are forbidden: < > : " / \ | ? *
+# Note: / and \ are path separators but are invalid within filename components
 # Additionally, control characters (0-31) and DEL (127) are invalid.
 invalid_chars = [
     "<",  # Less than
     ">",  # Greater than
-    ":",  # Colon (except for drive letters)
+    ":",  # Colon (except for drive letters like C:)
     '"',  # Double quote
-    "/",  # Forward slash
-    "\\", # Backslash (except as path separator)
     "|",  # Pipe
     "?",  # Question mark
     "*",  # Asterisk
 ] + [chr(i) for i in range(32)]  # Control characters 0-31
+
+# Note: Forward slash (/) and backslash (\) are path separators in Windows.
+# They are technically invalid within individual filename components, but we don't
+# check them here as they're commonly used in full paths. The Path library will
+# handle them appropriately as separators.
 
 # Reserved file names in Windows (case-insensitive)
 # These names cannot be used as file names, even with extensions

@@ -1129,8 +1129,10 @@ class TestInvalidCharacters:
         """Test that paths with special but valid characters are not flagged."""
         # These characters should be safe on most systems
         if platform.system() == "Windows":
+            # Windows has many restrictions; using basic safe chars for test
             test_path = "C:\\tmp\\test_file-name.txt"
         else:
+            # POSIX/Darwin allow most characters except null byte and colon (Darwin)
             test_path = "/tmp/test_file-name@#$%^&().txt"
 
         checker = PathChecker(test_path)
