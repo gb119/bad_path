@@ -4,7 +4,7 @@ Core functionality for checking dangerous file paths.
 
 import platform
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 
 class DangerousPathError(Exception):
@@ -153,7 +153,14 @@ class PathChecker:
         """
         self._path = path
         self._path_obj = Path(path).resolve()
+        
+        # Load paths and check the initial path
+        self._load_and_check_paths()
 
+    def _load_and_check_paths(self) -> None:
+        """
+        Load system and user paths, then check the current path against them.
+        """
         # Get system paths separately from user paths
         match platform.system():
             case "Windows":
@@ -170,26 +177,63 @@ class PathChecker:
         self._is_system_path = self._check_against_paths(self._system_paths)
         self._is_user_path = self._check_against_paths(self._user_paths)
 
-    def _check_against_paths(self, paths: List[str]) -> bool:
+    def _check_against_paths(self, paths: List[str], path_obj: Optional[Path] = None) -> bool:
         """
-        Internal method to check if the path matches any in the given list.
+        Internal method to check if a path matches any in the given list.
 
         Args:
             paths: List of paths to check against
+            path_obj: Optional Path object to check. If not provided, uses self._path_obj
 
         Returns:
             True if the path matches any in the list, False otherwise.
         """
+        if path_obj is None:
+            path_obj = self._path_obj
+            
         for dangerous in paths:
             try:
                 dangerous_obj = Path(dangerous).resolve()
                 # Check if path is the dangerous path or a subdirectory of it
-                if self._path_obj == dangerous_obj or dangerous_obj in self._path_obj.parents:
+                if path_obj == dangerous_obj or dangerous_obj in path_obj.parents:
                     return True
             except (OSError, ValueError):
                 # Handle cases where path resolution fails
                 continue
         return False
+
+    def __call__(self, path: Optional[Union[str, Path]] = None) -> bool:
+        """
+        Check a path for danger, with optional path reload.
+
+        Args:
+            path: Optional path to check. If provided, checks the new path against
+                  existing system and user paths (without reloading). If not provided,
+                  rechecks the original path against reloaded system and user paths.
+
+        Returns:
+            True if the path is dangerous, False otherwise.
+
+        Example:
+            checker = PathChecker("/etc/passwd")
+            # Check a different path without reloading
+            is_dangerous = checker("/home/user/file.txt")
+            # Recheck original path with reloaded paths
+            is_dangerous = checker()
+        """
+        if path is not None:
+            # Check the new path against existing paths (no reload)
+            path_obj = Path(path).resolve()
+            
+            # Check against existing paths
+            is_sys_path = self._check_against_paths(self._system_paths, path_obj)
+            is_usr_path = self._check_against_paths(self._user_paths, path_obj)
+            
+            return is_sys_path or is_usr_path
+        else:
+            # Reload paths and check the original path
+            self._load_and_check_paths()
+            return self._is_system_path or self._is_user_path
 
     def __bool__(self) -> bool:
         """
