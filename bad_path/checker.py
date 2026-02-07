@@ -95,20 +95,11 @@ def is_system_path(path: Union[str, Path]) -> bool:
     Returns:
         True if the path is within a system directory, False otherwise.
     """
-    path_obj = Path(path).resolve()
-    dangerous_paths = get_dangerous_paths()
-
-    for dangerous in dangerous_paths:
-        try:
-            dangerous_obj = Path(dangerous).resolve()
-            # Check if path is the dangerous path or a subdirectory of it
-            if path_obj == dangerous_obj or dangerous_obj in path_obj.parents:
-                return True
-        except (OSError, ValueError):
-            # Handle cases where path resolution fails
-            continue
-
-    return False
+    # Note: Despite the name, this function checks BOTH system paths and user-defined
+    # paths for backward compatibility (originally used get_dangerous_paths() which
+    # returns both). Use PathChecker class for fine-grained control.
+    checker = PathChecker(path)
+    return checker.is_system_path or checker.is_sensitive_path
 
 
 def is_sensitive_path(path: Union[str, Path]) -> bool:
@@ -124,7 +115,10 @@ def is_sensitive_path(path: Union[str, Path]) -> bool:
     Returns:
         True if the path is sensitive, False otherwise.
     """
-    return is_system_path(path)
+    # This function checks BOTH system and user-defined paths (same as is_system_path)
+    # for backward compatibility. Use PathChecker class for fine-grained control.
+    checker = PathChecker(path)
+    return checker.is_system_path or checker.is_sensitive_path
 
 
 class PathChecker:
@@ -337,9 +331,10 @@ def is_dangerous_path(path: Union[str, Path], raise_error: bool = False) -> bool
     Raises:
         DangerousPathError: If raise_error is True and the path is dangerous.
     """
-    is_dangerous = is_system_path(path)
-
-    if is_dangerous and raise_error:
+    try:
+        checker = PathChecker(path, raise_error=raise_error)
+        return bool(checker)
+    except DangerousPathError:
+        # PathChecker raises with message "dangerous location"
+        # But for backward compatibility, we need "dangerous system location"
         raise DangerousPathError(f"Path '{path}' points to a dangerous system location")
-
-    return is_dangerous
