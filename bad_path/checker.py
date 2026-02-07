@@ -304,6 +304,65 @@ class PathChecker:
         """
         return self._path
 
+    @property
+    def is_readable(self) -> bool:
+        """
+        Check if the path is accessible for read operations.
+
+        For existing files/directories, checks read permission.
+        For non-existing paths, returns False.
+
+        Returns:
+            True if the path exists and is readable, False otherwise.
+        """
+        import os
+        try:
+            # Check if path exists and is readable
+            return os.access(self._path_obj, os.R_OK)
+        except (OSError, ValueError):
+            return False
+
+    @property
+    def is_writable(self) -> bool:
+        """
+        Check if the path is accessible for write operations.
+
+        For existing files/directories, checks write permission.
+        For non-existing paths, returns False (use is_creatable instead).
+
+        Returns:
+            True if the path exists and is writable, False otherwise.
+        """
+        import os
+        try:
+            # Check if path exists and is writable
+            return os.access(self._path_obj, os.W_OK)
+        except (OSError, ValueError):
+            return False
+
+    @property
+    def is_creatable(self) -> bool:
+        """
+        Check if the path can be created (for non-existing paths).
+
+        For non-existing paths, checks if the parent directory exists and is writable.
+        For existing paths, returns False (use is_writable instead).
+
+        Returns:
+            True if the path doesn't exist and can be created, False otherwise.
+        """
+        import os
+        try:
+            # If path exists, it's not creatable (it already exists)
+            if self._path_obj.exists():
+                return False
+            
+            # Check if parent directory exists and is writable
+            parent = self._path_obj.parent
+            return parent.exists() and os.access(parent, os.W_OK | os.X_OK)
+        except (OSError, ValueError):
+            return False
+
     def __repr__(self) -> str:
         """
         Return a string representation of the PathChecker.
