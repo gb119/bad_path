@@ -53,13 +53,15 @@ except DangerousPathError as e:
 from bad_path import PathChecker
 
 checker = PathChecker("/etc/passwd")
-if checker:
+if not checker:
     print(f"Dangerous path detected!")
     print(f"Platform system path: {checker.is_system_path}")
     print(f"User-defined sensitive path: {checker.is_sensitive_path}")
 
 # Check path accessibility
 checker = PathChecker("/tmp/myfile.txt")
+if checker:
+    print("Safe path!")
 print(f"Readable: {checker.is_readable}")
 print(f"Writable: {checker.is_writable}")
 print(f"Creatable: {checker.is_creatable}")
@@ -87,7 +89,7 @@ from bad_path import is_dangerous_path
 if is_dangerous_path("/etc/passwd"):
     print("This is a dangerous system path!")
 
-if is_dangerous_path("/tmp/myfile.txt"):
+if not is_dangerous_path("/tmp/myfile.txt"):
     print("Safe to use!")
 ```
 
@@ -121,9 +123,9 @@ def safe_to_write(filepath):
     """Check if a path is both safe and writable."""
     checker = PathChecker(filepath)
     
-    # Must not be in a dangerous location
-    if checker:
-        return False
+    # PathChecker evaluates to True for safe paths
+    if not checker:
+        return False  # Dangerous location
     
     # Must be writable or creatable
     return checker.is_writable or checker.is_creatable

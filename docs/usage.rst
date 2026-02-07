@@ -35,7 +35,7 @@ between platform-specific system paths and user-defined sensitive paths:
    checker = PathChecker("/etc/passwd")
 
    # Use it in boolean context
-   if checker:
+   if not checker:
        print("This is a dangerous path!")
        print(f"Is system path: {checker.is_system_path}")
        print(f"Is user-defined sensitive: {checker.is_sensitive_path}")
@@ -44,8 +44,8 @@ between platform-specific system paths and user-defined sensitive paths:
    print(f"Checked path: {checker.path}")
 
 The ``PathChecker`` class evaluates to ``True`` when used in boolean context
-if the path is dangerous (either a system path or user-defined), and ``False``
-otherwise. The ``is_system_path`` property checks against platform-specific
+if the path is safe (not a system path or user-defined dangerous path), and ``False``
+if the path is dangerous. The ``is_system_path`` property checks against platform-specific
 dangerous paths (like ``/etc``, ``/bin`` on Linux, or ``C:\\Windows`` on Windows),
 while ``is_sensitive_path`` checks against user-defined paths added via
 ``add_user_path()``.
@@ -150,7 +150,7 @@ Using PathChecker for Detailed Feedback
        """Validate a path and provide detailed feedback."""
        checker = PathChecker(path)
        
-       if checker:
+       if not checker:
            reasons = []
            if checker.is_system_path:
                reasons.append("it's a platform-specific system path")
@@ -208,8 +208,8 @@ Combining Danger and Accessibility Checks
        """Check if a path is both safe (not dangerous) and writable."""
        checker = PathChecker(filepath)
        
-       # Path must not be dangerous
-       if checker:
+       # PathChecker evaluates to True for safe paths
+       if not checker:
            print(f"❌ {filepath} is in a dangerous location!")
            return False
        
