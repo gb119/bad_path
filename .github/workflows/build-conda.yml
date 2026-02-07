@@ -1,0 +1,72 @@
+name: Build with Mamba
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master, develop ]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_conda:
+    name: Build conda package on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: 'latest'
+        environment-name: build-env
+        create-args: >-
+          python=3.11
+          conda-build
+          boa
+          anaconda-client
+
+    - name: Build conda package
+      shell: bash -l {0}
+      run: |
+        conda mambabuild conda.recipe --output-folder dist/conda
+
+    - name: Upload conda package artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: conda-package-${{ matrix.os }}
+        path: dist/conda/**/*.tar.bz2
+
+  upload_conda:
+    needs: [build_conda]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: conda-package-*
+        merge-multiple: true
+        path: dist/conda
+
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        micromamba-version: 'latest'
+        environment-name: upload-env
+        create-args: >-
+          anaconda-client
+
+    - name: Upload to Anaconda Cloud
+      shell: bash -l {0}
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+      run: |
+        anaconda -t $ANACONDA_TOKEN upload --user phygbu dist/conda/**/*.tar.bz2
