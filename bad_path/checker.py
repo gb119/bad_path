@@ -95,6 +95,9 @@ def is_system_path(path: Union[str, Path]) -> bool:
     Returns:
         True if the path is within a system directory, False otherwise.
     """
+    # Note: Despite the name, this function checks BOTH system paths and user-defined
+    # paths for backward compatibility (originally used get_dangerous_paths() which
+    # returns both). Use PathChecker class for fine-grained control.
     checker = PathChecker(path)
     return checker.is_system_path or checker.is_sensitive_path
 
@@ -112,6 +115,8 @@ def is_sensitive_path(path: Union[str, Path]) -> bool:
     Returns:
         True if the path is sensitive, False otherwise.
     """
+    # This function checks BOTH system and user-defined paths (same as is_system_path)
+    # for backward compatibility. Use PathChecker class for fine-grained control.
     checker = PathChecker(path)
     return checker.is_system_path or checker.is_sensitive_path
 
@@ -330,5 +335,6 @@ def is_dangerous_path(path: Union[str, Path], raise_error: bool = False) -> bool
         checker = PathChecker(path, raise_error=raise_error)
         return bool(checker)
     except DangerousPathError:
-        # Re-raise with the expected error message for backward compatibility
+        # PathChecker raises with message "dangerous location"
+        # But for backward compatibility, we need "dangerous system location"
         raise DangerousPathError(f"Path '{path}' points to a dangerous system location")
