@@ -187,7 +187,7 @@ class BasePathChecker(ABC):
         
         This method must be implemented by platform-specific subclasses.
         """
-        raise NotImplementedError("Subclass must implement _load_invalid_chars")
+        pass
 
     @abstractmethod
     def _load_and_check_paths(self) -> None:
@@ -196,7 +196,7 @@ class BasePathChecker(ABC):
         
         This method must be implemented by platform-specific subclasses.
         """
-        raise NotImplementedError("Subclass must implement _load_and_check_paths")
+        pass
 
     def _check_against_paths(self, paths: list[str], path_obj: Path | None = None) -> bool:
         """
@@ -226,6 +226,10 @@ class BasePathChecker(ABC):
     def _check_invalid_chars(self, path_str: str | None = None) -> bool:
         """
         Internal method to check if a path contains invalid characters for the platform.
+
+        This base implementation checks for simple invalid character presence.
+        Platform-specific subclasses (like WindowsPathChecker) may override this
+        to add additional validation logic (e.g., drive letters, reserved names).
 
         Args:
             path_str: Optional path string to check. If not provided, uses self._path
