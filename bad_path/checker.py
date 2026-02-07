@@ -4,7 +4,7 @@ Core functionality for checking dangerous file paths.
 
 import platform
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 
 class DangerousPathError(Exception):
@@ -177,7 +177,7 @@ class PathChecker:
         self._is_system_path = self._check_against_paths(self._system_paths)
         self._is_user_path = self._check_against_paths(self._user_paths)
 
-    def _check_against_paths(self, paths: List[str], path_obj: Path = None) -> bool:
+    def _check_against_paths(self, paths: List[str], path_obj: Optional[Path] = None) -> bool:
         """
         Internal method to check if a path matches any in the given list.
 
@@ -202,7 +202,7 @@ class PathChecker:
                 continue
         return False
 
-    def __call__(self, path: Union[str, Path, None] = None) -> bool:
+    def __call__(self, path: Optional[Union[str, Path]] = None) -> bool:
         """
         Check a path for danger, with optional path reload.
 
