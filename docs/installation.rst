@@ -4,7 +4,7 @@ Installation
 Requirements
 ------------
 
-* Python 3.8 or higher
+* Python 3.10 or higher
 * No external dependencies required for core functionality
 
 Installing from PyPI
