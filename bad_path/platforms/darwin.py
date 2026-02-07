@@ -2,7 +2,7 @@
 Darwin (macOS) dangerous/sensitive paths.
 """
 
-# Common sensitive paths across all platforms
+# Common sensitive paths for POSIX-based systems
 common_paths = [
     "/etc",
     "/bin",
