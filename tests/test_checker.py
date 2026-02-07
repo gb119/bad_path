@@ -1,5 +1,7 @@
-"""
-Tests for the bad_path package.
+"""Tests for the bad_path package.
+
+This module contains comprehensive test coverage for path checking functionality,
+including platform-specific tests for Windows, macOS (Darwin), and POSIX systems.
 """
 
 import os
