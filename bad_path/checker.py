@@ -2,6 +2,7 @@
 Core functionality for checking dangerous file paths.
 """
 
+import os
 import platform
 from pathlib import Path
 
@@ -315,7 +316,6 @@ class PathChecker:
         Returns:
             True if the path exists and is readable, False otherwise.
         """
-        import os
         try:
             # Check if path exists and is readable
             return os.access(self._path_obj, os.R_OK)
@@ -333,7 +333,6 @@ class PathChecker:
         Returns:
             True if the path exists and is writable, False otherwise.
         """
-        import os
         try:
             # Check if path exists and is writable
             return os.access(self._path_obj, os.W_OK)
@@ -351,7 +350,6 @@ class PathChecker:
         Returns:
             True if the path doesn't exist and can be created, False otherwise.
         """
-        import os
         try:
             # If path exists, it's not creatable (it already exists)
             if self._path_obj.exists():
