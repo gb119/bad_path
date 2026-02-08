@@ -180,7 +180,7 @@ def test_call_with_invalid_chars_path():
         test_path = "/tmp/test\x00file.txt"  # nosec B108
 
     # __call__ returns True if dangerous, False if safe
-    result = checker(test_path)
+    result = checker(test_path)  # pylint: disable=not-callable
     assert result is True
 
 
@@ -196,7 +196,7 @@ def test_call_with_invalid_chars_and_raise_error():
         test_path = "/tmp/test\x00file.txt"  # nosec B108
 
     with pytest.raises(DangerousPathError):
-        checker(test_path, raise_error=True)
+        checker(test_path, raise_error=True)  # pylint: disable=not-callable
 
 
 def test_is_dangerous_path_with_invalid_chars():

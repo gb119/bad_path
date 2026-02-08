@@ -24,7 +24,7 @@ def test_call_with_new_path_safe():
     assert not checker  # Original path is dangerous (evaluates to False)
 
     # Check a different safe path without reloading
-    result = checker(safe_path)
+    result = checker(safe_path)  # pylint: disable=not-callable
     assert result is False  # New path is safe (call returns False for safe)
 
     # Original path should still be stored
@@ -46,7 +46,7 @@ def test_call_with_new_path_dangerous():
     assert checker  # Original path is safe (evaluates to True)
 
     # Check a different dangerous path without reloading
-    result = checker(dangerous_path)
+    result = checker(dangerous_path)  # pylint: disable=not-callable
     assert result is True  # New path is dangerous (call returns True for dangerous)
 
     # Original path should still be stored
@@ -72,7 +72,7 @@ def test_call_without_path_reloads():
 
     try:
         # Call without path should reload and recheck
-        result = checker()
+        result = checker()  # pylint: disable=not-callable
         assert result is True  # Should now be dangerous (call returns True for dangerous)
 
         # Properties should also be updated
@@ -107,7 +107,7 @@ def test_call_with_path_does_not_reload():
 
         # Call with a path - should use existing _user_paths (not reload)
         # So it won't see the newly added path
-        result = checker(check_path)
+        result = checker(check_path)  # pylint: disable=not-callable
 
         # The path should not be dangerous because checker didn't reload
         # and still has the old (empty) user paths
@@ -131,7 +131,7 @@ def test_call_with_pathlib_object():
         safe_path = Path("/tmp/test.txt")  # nosec B108
 
     checker = PathChecker(dangerous_path)
-    result = checker(safe_path)
+    result = checker(safe_path)  # pylint: disable=not-callable
     assert result is False
 
 
@@ -152,7 +152,7 @@ def test_call_preserves_original_state():
     original_bool = bool(checker)
 
     # Call with a different path
-    checker(safe_path)
+    checker(safe_path)  # pylint: disable=not-callable
 
     # Original state should be preserved
     assert checker.is_system_path == original_is_system
@@ -180,7 +180,7 @@ def test_call_updates_properties_when_no_path():
 
     try:
         # Call without path to reload
-        result = checker()
+        result = checker()  # pylint: disable=not-callable
 
         # Should be dangerous now (result from __call__ returns True if dangerous)
         assert result is True
@@ -212,7 +212,7 @@ def test_call_with_user_defined_path():
         assert checker  # Safe path (evaluates to True)
 
         # Check the user-defined dangerous path
-        result = checker(test_file)
+        result = checker(test_file)  # pylint: disable=not-callable
         assert result is True  # Should be dangerous (call returns True for dangerous)
     finally:
         clear_user_paths()
@@ -275,7 +275,7 @@ def test_call_raise_error_on_dangerous_path():
 
     # Call with dangerous path and raise_error=True
     with pytest.raises(DangerousPathError) as exc_info:
-        checker(dangerous_path, raise_error=True)
+        checker(dangerous_path, raise_error=True)  # pylint: disable=not-callable
 
     assert "dangerous location" in str(exc_info.value)
 
@@ -299,7 +299,7 @@ def test_call_raise_error_on_recheck_with_user_path():
     try:
         # Recheck with raise_error=True (no path argument, so rechecks original)
         with pytest.raises(DangerousPathError) as exc_info:
-            checker(raise_error=True)
+            checker(raise_error=True)  # pylint: disable=not-callable
 
         assert "dangerous location" in str(exc_info.value)
     finally:
@@ -319,7 +319,7 @@ def test_call_raise_error_false_on_safe_path():
     checker = PathChecker(safe_path)
 
     # Call with raise_error=True on safe path - should not raise
-    result = checker(safe_path, raise_error=True)
+    result = checker(safe_path, raise_error=True)  # pylint: disable=not-callable
     assert result is False
 
 
@@ -352,7 +352,7 @@ def test_raise_error_default_false_in_call():
     checker = PathChecker(safe_path)
 
     # Call with dangerous path but default raise_error=False
-    result = checker(dangerous_path)  # Should not raise
+    result = checker(dangerous_path)  # pylint: disable=not-callable  # Should not raise
     assert result is True  # Path is dangerous but no exception raised
 
 
