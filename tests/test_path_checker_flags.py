@@ -208,7 +208,7 @@ def test_call_method_respects_flags():
     checker = PathChecker("/tmp/safe.txt", system_ok=True, not_writeable=True)  # nosec B108
 
     # Calling with a system path should return False (not dangerous) due to flags
-    result = checker(dangerous_path)
+    result = checker(dangerous_path)  # pylint: disable=not-callable
     assert result is False  # __call__ returns True if dangerous
 
 
