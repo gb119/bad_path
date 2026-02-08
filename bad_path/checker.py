@@ -439,7 +439,8 @@ class BasePathChecker(ABC):
             cwd = Path.cwd().resolve()
             
             # Check if path equals CWD (handles "." case)
-            if path_obj == cwd:
+            # Use string comparison in lowercase for case-insensitive filesystems (Windows)
+            if str(path_obj).lower() == str(cwd).lower():
                 return False  # Path is CWD itself (safe)
             
             # Try to express path_obj relative to cwd
