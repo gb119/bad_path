@@ -353,10 +353,9 @@ class BasePathChecker(ABC):
         if self._has_invalid_chars:
             return True
 
-        # Check writeability (if not_writeable flag requires it)
+        # Check writeability
         if not self._not_writeable:
-            # If not_writeable is False, we don't allow non-writeable paths
-            # So check if path exists but is not writeable
+            # If not_writeable is False, non-writable existing paths are considered dangerous
             if self._path_obj.exists() and not self.is_writable:
                 return True
 
@@ -871,11 +870,11 @@ class PathChecker:
         ...     print(f"User-defined: {checker.is_sensitive_path}")
         Dangerous path! System path: True
         User-defined: False
-        >>> # Allow system paths
-        >>> checker = PathChecker("/etc/passwd", system_ok=True)  # doctest: +SKIP
+        >>> # Allow system paths (also need not_writeable=True for read-only files)
+        >>> checker = PathChecker("/etc/passwd", system_ok=True, not_writeable=True)  # doctest: +SKIP
         >>> if checker:
-        ...     print("Safe because system_ok=True!")
-        Safe because system_ok=True!
+        ...     print("Safe because system_ok=True and not_writeable=True!")
+        Safe because system_ok=True and not_writeable=True!
     """
 
     def __new__(
