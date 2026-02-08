@@ -8,7 +8,8 @@ A Python package to identify potentially dangerous file paths.
 
 ## Overview
 
-`bad_path` provides functions to test whether a supplied file path points to a system-sensitive location, taking into account different OS platforms (Windows, macOS, Linux).
+`bad_path` provides functions to test whether a supplied file path points to a system-sensitive location, taking
+into account different OS platforms (Windows, macOS, Linux).
 
 ## Installation
 

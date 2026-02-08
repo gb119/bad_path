@@ -14,17 +14,20 @@ contributors.
 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/bad_path.git
    cd bad_path
    ```
 
 3. Install the package with development dependencies:
+
    ```bash
    pip install -e ".[dev]"
    ```
 
 4. Create a branch for your changes:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -34,11 +37,13 @@ contributors.
 ### Running Tests
 
 Run the test suite:
+
 ```bash
 pytest
 ```
 
 Run tests with coverage:
+
 ```bash
 pytest --cov=bad_path --cov-report=term-missing
 ```
@@ -46,11 +51,13 @@ pytest --cov=bad_path --cov-report=term-missing
 ### Code Quality
 
 Check code with ruff:
+
 ```bash
 ruff check .
 ```
 
 Format code (if needed):
+
 ```bash
 ruff format .
 ```
@@ -58,6 +65,7 @@ ruff format .
 ### Building Documentation
 
 Build the documentation locally:
+
 ```bash
 cd docs
 make html
@@ -68,23 +76,27 @@ The built documentation will be in `docs/_build/html/`.
 ## Coding Standards
 
 ### Python Style
+
 - Follow PEP 8 style guide
 - Use Python 3.10+ features (type unions with |, match/case statements)
 - Line length: 100 characters (configured in pyproject.toml)
 - Use ruff for linting and formatting
 
 ### Docstrings
+
 - Follow Google-style docstrings
 - Use British English spelling in documentation
 - Document all public classes, methods, and functions
 - Include examples in docstrings for public APIs
 
 ### Type Hints
+
 - Use type hints for all function signatures
 - Use modern Python 3.10+ syntax (e.g., `list[str]` instead of `List[str]`)
 - Use `str | Path` for union types instead of `Union[str, Path]`
 
 ### Testing
+
 - Write tests for all new features
 - Maintain or improve test coverage (target: 85%+)
 - Test platform-specific behaviour where applicable
@@ -121,9 +133,11 @@ The built documentation will be in `docs/_build/html/`.
 ## What to Contribute
 
 ### Good First Issues
+
 Look for issues tagged with `good first issue` or `help wanted`.
 
 ### Areas for Contribution
+
 - **Bug Fixes**: Report and fix bugs
 - **Documentation**: Improve docs, add examples, fix typos
 - **Tests**: Increase test coverage, add edge case tests
@@ -132,6 +146,7 @@ Look for issues tagged with `good first issue` or `help wanted`.
 - **Platform Support**: Improve cross-platform compatibility
 
 ### Priority Areas (from Code Review)
+
 1. Add static type checking (mypy) to CI/CD
 2. Increase test coverage to 85%+
 3. Optimise path matching for large user path lists
@@ -141,6 +156,7 @@ Look for issues tagged with `good first issue` or `help wanted`.
 ## Reporting Bugs
 
 When reporting bugs, please include:
+
 - Python version and operating system
 - bad_path version
 - Minimal code to reproduce the issue
@@ -150,6 +166,7 @@ When reporting bugs, please include:
 ## Feature Requests
 
 When requesting features, please include:
+
 - Use case: Why is this feature needed?
 - Proposed API: How should it work?
 - Alternatives: Are there other ways to achieve this?
@@ -158,6 +175,7 @@ When requesting features, please include:
 ## Questions?
 
 If you have questions about contributing, feel free to:
+
 - Open an issue with the `question` label
 - Check existing issues and documentation
 

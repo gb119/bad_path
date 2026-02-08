@@ -14,6 +14,7 @@ cross-platform support.
 ## Positive Findings ✅
 
 ### 1. Security & Safety
+
 - ✅ Properly handles symlinks by resolving them before checking
 - ✅ Correctly detects path traversal attempts (../../../etc/passwd)
 - ✅ Platform-specific invalid character validation
@@ -21,6 +22,7 @@ cross-platform support.
 - ✅ Proper error handling for edge cases
 
 ### 2. Code Quality
+
 - ✅ Clean, readable, well-structured code
 - ✅ Proper use of ABC (Abstract Base Class) pattern
 - ✅ Factory pattern for platform-specific implementations
@@ -29,18 +31,21 @@ cross-platform support.
 - ✅ All 83 tests pass (7 platform-specific tests skipped appropriately)
 
 ### 3. Documentation
+
 - ✅ Comprehensive docstrings following Google style guide
 - ✅ Good README with examples
 - ✅ Sphinx documentation builds successfully
 - ✅ Clear API documentation
 
 ### 4. Testing
+
 - ✅ 73% test coverage (good for a security library)
 - ✅ Platform-specific tests for Windows, macOS, and POSIX
 - ✅ Tests for edge cases (null bytes, reserved names, etc.)
 - ✅ CI/CD testing on Python 3.10-3.14 across 3 OS platforms
 
 ### 5. Architecture
+
 - ✅ Clean separation of concerns
 - ✅ Platform-specific modules (windows.py, darwin.py, posix.py)
 - ✅ Both functional and OOP APIs available
@@ -51,14 +56,17 @@ cross-platform support.
 ## Issues Found 🔍
 
 ### Critical Issues: 0
+
 No critical security or functionality issues found.
 
 ### High Priority Issues: 0
+
 No high-priority issues found.
 
 ### Medium Priority Issues: 3
 
 #### 1. README.md Line Length Violation
+
 - **Severity**: Low-Medium
 - **File**: `README.md:11`
 - **Issue**: Line 11 exceeds recommended 80-character limit (actual: 173 characters)
@@ -66,6 +74,7 @@ No high-priority issues found.
 - **Recommendation**: Reformat long lines in README for better readability
 
 #### 2. Documentation Build Warnings
+
 - **Severity**: Medium
 - **Files**: Sphinx documentation build
 - **Issues**:
@@ -77,6 +86,7 @@ No high-priority issues found.
   - Add `:no-index:` directive to duplicate autodoc entries
 
 #### 3. Performance with Large User Path Lists
+
 - **Severity**: Low-Medium
 - **Issue**: Path checking slows linearly with user-defined path count
   - 0 paths: 0.39ms per check
@@ -88,12 +98,14 @@ No high-priority issues found.
 ### Low Priority Issues: 2
 
 #### 4. Missing Static Type Checking
+
 - **Severity**: Low
 - **Issue**: No mypy or pyright integration in development workflow
 - **Impact**: Type hints not validated at development time
 - **Recommendation**: Add mypy to dev dependencies and CI/CD
 
 #### 5. Test Coverage Gaps
+
 - **Severity**: Low
 - **Areas with missing coverage**:
   - Windows-specific path checker (not tested on Linux CI)
@@ -107,13 +119,15 @@ No high-priority issues found.
 
 ## Architectural Observations 📐
 
-### Strengths:
+### Strengths
+
 1. **Clean Factory Pattern**: Platform detection and instantiation well-designed
 2. **Separation of Concerns**: Clear distinction between system vs user paths
 3. **Proper Encapsulation**: Internal state well-protected
 4. **Good API Design**: Both functional and OOP interfaces available
 
-### Areas for Consideration:
+### Areas for Consideration
+
 1. **TOCTOU (Time-of-check to time-of-use)**: The library checks path properties but
    doesn't operate on them. This is expected behaviour and properly documented, but users
    should be aware that path status can change between check and use.
@@ -130,19 +144,22 @@ No high-priority issues found.
 
 ## Testing Analysis 🧪
 
-### Current State:
+### Current State
+
 - **Total Tests**: 90 (83 passed, 7 skipped on Linux)
 - **Coverage**: 73%
 - **Platforms**: Linux (primary), Windows (CI), macOS (CI)
 
-### Coverage by Module:
+### Coverage by Module
+
 - `bad_path/__init__.py`: 100%
 - `bad_path/checker.py`: 75% (198/198 statements, 50 missed)
 - `bad_path/platforms/posix.py`: 100%
 - `bad_path/platforms/darwin.py`: 0% (tested on macOS CI only)
 - `bad_path/platforms/windows.py`: 0% (tested on Windows CI only)
 
-### Missing Test Coverage:
+### Missing Test Coverage
+
 - Windows reserved name checking (lines 640-662)
 - Darwin path loading (lines 672-686)
 - Error handling for path resolution failures
@@ -153,7 +170,8 @@ No high-priority issues found.
 
 ## Security Assessment 🔒
 
-### Security Strengths:
+### Security Strengths
+
 1. ✅ No SQL injection vectors (no database)
 2. ✅ No command injection vectors (no subprocess calls)
 3. ✅ No XXE vulnerabilities (no XML parsing)
@@ -161,14 +179,16 @@ No high-priority issues found.
 5. ✅ Symlink attack protection via path resolution
 6. ✅ Invalid character validation prevents null byte attacks
 
-### Potential Security Considerations:
+### Potential Security Considerations
+
 1. **Race Conditions (TOCTOU)**: Expected and acceptable for a checking library
 2. **Denial of Service**: Very long path strings could cause slowdowns, but Python's
    Path library handles this
 3. **Unicode Normalisation**: No explicit Unicode normalisation; could lead to bypass
    with equivalent representations
 
-### Recommended Security Enhancements:
+### Recommended Security Enhancements
+
 - Consider adding Unicode normalisation (NFC/NFD) to prevent homograph attacks
 - Document TOCTOU limitations more prominently
 - Consider adding rate limiting for PathChecker instantiation in high-throughput
@@ -178,18 +198,21 @@ No high-priority issues found.
 
 ## Performance Analysis ⚡
 
-### Benchmarks (on test machine):
+### Benchmarks (on test machine)
+
 - **Single path check**: ~0.32ms average
 - **1000 iterations**: 1.28 seconds (4 paths each)
 - **With 100 user paths**: ~3ms per check
 
-### Performance Characteristics:
+### Performance Characteristics
+
 - ✅ Fast for typical use cases
 - ⚠️  Linear degradation with user path count
 - ✅ Path resolution is cached by Python's Path library
 - ✅ No unnecessary I/O operations
 
-### Recommendations:
+### Recommendations
+
 - Document performance characteristics for users
 - Consider caching resolved paths for frequently checked paths
 - Optimise path matching algorithm for large user path lists
@@ -198,14 +221,16 @@ No high-priority issues found.
 
 ## Documentation Quality 📚
 
-### Strengths:
+### Documentation Strengths
+
 - ✅ Comprehensive README with examples
 - ✅ Google-style docstrings throughout
 - ✅ Sphinx documentation available
 - ✅ API reference complete
 - ✅ Usage examples clear and helpful
 
-### Areas for Improvement:
+### Areas for Improvement
+
 - Add more real-world use case examples
 - Document performance characteristics
 - Add troubleshooting section
@@ -216,19 +241,22 @@ No high-priority issues found.
 
 ## CI/CD Quality 🚀
 
-### Workflows Present:
+### Workflows Present
+
 1. ✅ `tests.yml` - Tests on 3 OS × 5 Python versions = 15 combinations
 2. ✅ `docs.yml` - Documentation building and deployment
 3. ✅ `build-wheels.yml` - PyPI package building
 4. ✅ `build-conda.yml` - Conda package building
 
-### Strengths:
+### CI/CD Strengths
+
 - Comprehensive test matrix
 - Automated documentation deployment
 - Automated package publishing
 - Proper use of GitHub Actions v4/v5
 
-### Recommendations:
+### CI/CD Recommendations
+
 - Add code coverage reporting to PR comments
 - Add security scanning (e.g., Bandit, Safety)
 - Consider adding dependency update automation (Dependabot)
@@ -239,7 +267,7 @@ No high-priority issues found.
 ## Comparison with Best Practices ⭐
 
 | Practice | Status | Notes |
-|----------|--------|-------|
+| -------- | ------ | ----- |
 | Type hints | ✅ | Modern Python 3.10+ syntax |
 | Docstrings | ✅ | Google style, comprehensive |
 | Testing | ✅ | 73% coverage, cross-platform |
@@ -258,19 +286,22 @@ No high-priority issues found.
 
 ## Recommendations Summary 📋
 
-### Immediate Actions (Before Next Release):
+### Immediate Actions (Before Next Release)
+
 1. Fix README line length (trivial)
 2. Create `docs/_static` directory
 3. Fix Sphinx duplicate documentation warnings
 
-### Short-term Improvements (Next Sprint):
+### Short-term Improvements (Next Sprint)
+
 1. Add mypy type checking to CI/CD
 2. Increase test coverage to 85%+
 3. Add CHANGELOG.md
 4. Add CONTRIBUTING.md
 5. Document performance characteristics
 
-### Long-term Enhancements (Future Versions):
+### Long-term Enhancements (Future Versions)
+
 1. Optimise path matching for large user path lists
 2. Add Unicode normalisation for security
 3. Consider adding path pattern matching (wildcards)
