@@ -1,5 +1,6 @@
 # bad_path
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/792b3717b00a471d93c023df76af17c1)](https://app.codacy.com/gh/stonerlab/bad_path?utm_source=github.com&utm_medium=referral&utm_content=stonerlab/bad_path&utm_campaign=Badge_Grade)
 [![Tests](https://github.com/gb119/bad_path/actions/workflows/tests.yml/badge.svg)](https://github.com/gb119/bad_path/actions/workflows/tests.yml)
 [![Documentation](https://github.com/gb119/bad_path/actions/workflows/docs.yml/badge.svg)](https://gb119.github.io/bad_path/)
 [![PyPI version](https://badge.fury.io/py/bad-path.svg)](https://badge.fury.io/py/bad-path)
