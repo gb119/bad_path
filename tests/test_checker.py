@@ -991,6 +991,32 @@ class TestInvalidCharacters:
         checker = PathChecker("/tmp/test\x00file.txt")
         assert checker.has_invalid_chars is True
 
+    def test_darwin_var_folders_safe(self):
+        """Test that /var/folders (temp files) is safe on macOS."""
+        if platform.system() != "Darwin":
+            pytest.skip("macOS-specific test")
+
+        # /var/folders is used for temporary files and should be safe
+        checker = PathChecker("/var/folders/test/file.txt")
+        assert checker  # Should be safe
+        assert not checker.is_system_path
+
+    def test_darwin_var_subdirs_dangerous(self):
+        """Test that /var subdirectories (except folders) are dangerous on macOS."""
+        if platform.system() != "Darwin":
+            pytest.skip("macOS-specific test")
+
+        # These /var subdirectories should be dangerous
+        dangerous_paths = [
+            "/var/root/test.txt",
+            "/var/db/test.db",
+            "/var/log/system.log",
+        ]
+        for path in dangerous_paths:
+            checker = PathChecker(path)
+            assert not checker  # Should be dangerous
+            assert checker.is_system_path
+
     def test_windows_invalid_chars(self):
         """Test that Windows invalid characters are detected."""
         if platform.system() != "Windows":
