@@ -1,6 +1,5 @@
 """Tests for PathChecker cwd_only parameter (path traversal protection)."""
 
-import os
 import tempfile
 from pathlib import Path
 
@@ -117,12 +116,12 @@ def test_cwd_only_call_method():
 
     # Check a path outside CWD using __call__
     parent_path = Path.cwd().parent / "test.txt"
-    is_dangerous = checker(parent_path)
+    is_dangerous = checker(parent_path)  # pylint: disable=not-callable
     assert is_dangerous  # Should be dangerous
 
     # Check a path inside CWD using __call__
     cwd_path = Path.cwd() / "test.txt"
-    is_dangerous = checker(cwd_path)
+    is_dangerous = checker(cwd_path)  # pylint: disable=not-callable
     assert not is_dangerous  # Should be safe
 
 
@@ -132,7 +131,7 @@ def test_cwd_only_call_method_with_raise_error():
 
     parent_path = Path.cwd().parent / "test.txt"
     with pytest.raises(DangerousPathError):
-        checker(parent_path, raise_error=True)
+        checker(parent_path, raise_error=True)  # pylint: disable=not-callable
 
 
 def test_cwd_only_with_nonexistent_path():

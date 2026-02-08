@@ -134,9 +134,9 @@ def test_cwd_only_documentation_examples():
     assert not checker  # Should be dangerous
 
     # Example 2: Block paths outside CWD
-    checker = PathChecker("/tmp/file.txt", cwd_only=True)
+    checker = PathChecker("/tmp/file.txt", cwd_only=True)  # nosec
     # Should be dangerous if /tmp is not within CWD
-    if not str(Path("/tmp/file.txt").resolve()).startswith(str(Path.cwd().resolve())):
+    if not str(Path("/tmp/file.txt").resolve()).startswith(str(Path.cwd().resolve())):  # nosec
         assert not checker
 
     # Example 3: Allow paths within CWD

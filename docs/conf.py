@@ -16,7 +16,7 @@ from bad_path import __version__
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'bad_path'
-copyright = '2026, Gavin Burnell'
+project_copyright = '2026, Gavin Burnell'
 author = 'Gavin Burnell'
 release = __version__
 version = __version__
