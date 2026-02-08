@@ -332,26 +332,26 @@ class BasePathChecker(ABC):
         self._mode = mode
 
         # Handle mode parameter
-        if mode is not None:
-            if mode == "read":
+        match mode:
+            case "read":
                 # For reading: allow system paths, user paths, and non-writable paths
                 self._system_ok = True
                 self._user_paths_ok = True
                 self._not_writeable = True
-            elif mode == "write":
+            case "write":
                 # For writing: strict validation (default flags)
                 self._system_ok = False
                 self._user_paths_ok = False
                 self._not_writeable = False
-            else:
+            case None:
+                # No mode specified - use individual flags
+                self._system_ok = system_ok
+                self._user_paths_ok = user_paths_ok
+                self._not_writeable = not_writeable
+            case _:
                 raise ValueError(
                     f"Invalid mode '{mode}'. Must be None, 'read', or 'write'."
                 )
-        else:
-            # No mode specified - use individual flags
-            self._system_ok = system_ok
-            self._user_paths_ok = user_paths_ok
-            self._not_writeable = not_writeable
 
         # Handle cwd_only flag (independent of mode)
         self._cwd_only = cwd_only
@@ -359,17 +359,18 @@ class BasePathChecker(ABC):
         # Load platform-specific invalid characters first (before resolve)
         self._load_invalid_chars()
 
-        # Check for invalid characters before attempting to resolve the path
-        # (some invalid chars like null byte will cause resolve to fail)
-        self._has_invalid_chars = self._check_invalid_chars()
-
         # Try to resolve the path, but handle errors gracefully
         try:
             self._path_obj = Path(path).resolve()
+            self._path=str(self._path_obj) # update our path with the resolved path
         except (ValueError, OSError):
             # If path contains invalid characters that prevent resolution,
             # create a non-resolved Path object
             self._path_obj = Path(path)
+
+        # Check for invalid characters before attempting to resolve the path
+        # (some invalid chars like null byte will cause resolve to fail)
+        self._has_invalid_chars = self._check_invalid_chars()
 
         # Load paths and check the initial path
         self._load_and_check_paths()
@@ -437,12 +438,12 @@ class BasePathChecker(ABC):
 
         try:
             cwd = Path.cwd().resolve()
-            
+
             # Check if path equals CWD (handles "." case)
             # Use case-sensitive comparison for Linux/macOS
             if path_obj == cwd:
                 return False  # Path is CWD itself (safe)
-            
+
             # Also try samefile() if paths exist (handles symlinks, etc.)
             try:
                 if path_obj.exists() and cwd.exists() and path_obj.samefile(cwd):
@@ -450,7 +451,7 @@ class BasePathChecker(ABC):
             except (OSError, ValueError, AttributeError):
                 # samefile() not available or failed, continue with relative_to
                 pass
-            
+
             # Try to express path_obj relative to cwd
             # If this succeeds, the path is within CWD
             path_obj.relative_to(cwd)
@@ -780,15 +781,14 @@ class WindowsPathChecker(BasePathChecker):
         """
         if path_obj is None:
             path_obj = self._path_obj
-
         try:
             cwd = Path.cwd().resolve()
-            
+
             # Check if path equals CWD (handles "." case)
             # Use case-insensitive string comparison for Windows
             if str(path_obj).lower() == str(cwd).lower():
                 return False  # Path is CWD itself (safe)
-            
+
             # Also try samefile() if paths exist (handles symlinks, etc.)
             try:
                 if path_obj.exists() and cwd.exists() and path_obj.samefile(cwd):
@@ -796,7 +796,7 @@ class WindowsPathChecker(BasePathChecker):
             except (OSError, ValueError, AttributeError):
                 # samefile() not available or failed, continue with relative_to
                 pass
-            
+
             # Try to express path_obj relative to cwd
             # If this succeeds, the path is within CWD
             path_obj.relative_to(cwd)
