@@ -362,7 +362,6 @@ class BasePathChecker(ABC):
         # Try to resolve the path, but handle errors gracefully
         try:
             self._path_obj = Path(path).resolve()
-            self._path=str(self._path_obj) # update our path with the resolved path
         except (ValueError, OSError):
             # If path contains invalid characters that prevent resolution,
             # create a non-resolved Path object
@@ -826,7 +825,7 @@ class WindowsPathChecker(BasePathChecker):
                 True if the path contains invalid characters, False otherwise.
         """
         if path_str is None:
-            path_str = str(self._path)
+            path_str = str(self._path_obj)
 
         # Check for invalid characters
         for char in self._invalid_chars:
