@@ -439,11 +439,11 @@ class BasePathChecker(ABC):
             cwd = Path.cwd().resolve()
             
             # Check if path equals CWD (handles "." case)
-            # Use string comparison in lowercase for case-insensitive filesystems (Windows)
-            if str(path_obj).lower() == str(cwd).lower():
+            # Use case-sensitive comparison for Linux/macOS
+            if path_obj == cwd:
                 return False  # Path is CWD itself (safe)
             
-            # On Windows, also try samefile() if paths exist
+            # Also try samefile() if paths exist (handles symlinks, etc.)
             try:
                 if path_obj.exists() and cwd.exists() and path_obj.samefile(cwd):
                     return False  # Same file/directory (safe)
@@ -763,6 +763,50 @@ class WindowsPathChecker(BasePathChecker):
         # Check both types
         self._is_system_path = self._check_against_paths(self._system_paths)
         self._is_user_path = self._check_against_paths(self._user_paths)
+
+    def _check_cwd_traversal(self, path_obj: Path | None = None) -> bool:
+        """Check if a path traverses outside the current working directory.
+
+        Windows-specific implementation with case-insensitive comparison.
+
+        Keyword Parameters:
+            path_obj (Path | None):
+                Optional Path object to check. If not provided, uses self._path_obj.
+                Defaults to None.
+
+        Returns:
+            (bool):
+                True if the path is outside CWD (dangerous), False otherwise.
+        """
+        if path_obj is None:
+            path_obj = self._path_obj
+
+        try:
+            cwd = Path.cwd().resolve()
+            
+            # Check if path equals CWD (handles "." case)
+            # Use case-insensitive string comparison for Windows
+            if str(path_obj).lower() == str(cwd).lower():
+                return False  # Path is CWD itself (safe)
+            
+            # Also try samefile() if paths exist (handles symlinks, etc.)
+            try:
+                if path_obj.exists() and cwd.exists() and path_obj.samefile(cwd):
+                    return False  # Same file/directory (safe)
+            except (OSError, ValueError, AttributeError):
+                # samefile() not available or failed, continue with relative_to
+                pass
+            
+            # Try to express path_obj relative to cwd
+            # If this succeeds, the path is within CWD
+            path_obj.relative_to(cwd)
+            return False  # Path is within CWD (safe)
+        except ValueError:
+            # relative_to raised ValueError, so path is outside CWD
+            return True  # Path is outside CWD (dangerous)
+        except (OSError, RuntimeError):
+            # If other resolution fails, treat as dangerous
+            return True
 
     def _check_invalid_chars(self, path_str: str | None = None) -> bool:
         """Check for Windows-specific invalid characters.
