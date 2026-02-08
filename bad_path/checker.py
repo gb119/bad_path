@@ -15,7 +15,6 @@ from pathlib import Path
 class DangerousPathError(PermissionError):
     """Exception raised when a dangerous path is detected."""
 
-    pass
 
 
 # Module-level list of user-defined dangerous paths
