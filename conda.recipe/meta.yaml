@@ -2,15 +2,14 @@
 
 # Read version from package __init__.py
 {% set data = load_setup_py_data() %}
-{% set version = data.get('version') %}
 
 package:
   name: {{ name|lower }}
-  version: {{ version }}
+  version: {{ environ.get('VERSION', '') }}
 
 source:
   path: ..
-
+  
 build:
   number: 0
   noarch: python
