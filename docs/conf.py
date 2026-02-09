@@ -51,8 +51,8 @@ html_theme_options = {
     'linktotheme': False,
 }
 
-# Use organization logo - GitHub avatar URL
-html_logo = 'https://avatars.githubusercontent.com/stonerlab'
+# Use organization logo
+html_logo = '_static/StonerLogo2.png'
 
 # -- Options for intersphinx extension ---------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#configuration
