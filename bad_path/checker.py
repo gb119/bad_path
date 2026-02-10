@@ -16,7 +16,6 @@ class DangerousPathError(PermissionError):
     """Exception raised when a dangerous path is detected."""
 
 
-
 # Module-level list of user-defined dangerous paths
 _user_defined_paths: list[str] = []
 
@@ -461,7 +460,9 @@ class BasePathChecker(ABC):
             # If other resolution fails, treat as dangerous
             return True
 
-    def _check_against_paths(self, paths: list[str], path_obj: Path | None = None) -> bool:
+    def _check_against_paths(
+        self, paths: list[str], path_obj: Path | None = None
+    ) -> bool:
         """Check if a path matches any in the given list.
 
         Args:
@@ -517,7 +518,9 @@ class BasePathChecker(ABC):
 
         return False
 
-    def __call__(self, path: str | Path | None = None, raise_error: bool = False) -> bool:
+    def __call__(
+        self, path: str | Path | None = None, raise_error: bool = False
+    ) -> bool:
         """Check a path for danger, with optional path reload.
 
         Note: Unlike the boolean context (which returns True for safe paths),
@@ -585,7 +588,9 @@ class BasePathChecker(ABC):
                 is_dangerous = True
 
             if is_dangerous and raise_error:
-                raise DangerousPathError(f"Path '{path}' points to a dangerous location")
+                raise DangerousPathError(
+                    f"Path '{path}' points to a dangerous location"
+                )
 
             return is_dangerous
         else:
@@ -594,7 +599,9 @@ class BasePathChecker(ABC):
             is_dangerous = self._is_dangerous()
 
             if is_dangerous and raise_error:
-                raise DangerousPathError(f"Path '{self._path}' points to a dangerous location")
+                raise DangerousPathError(
+                    f"Path '{self._path}' points to a dangerous location"
+                )
 
             return is_dangerous
 
@@ -799,18 +806,39 @@ def _create_path_checker(
     match platform.system():
         case "Windows":
             from .platforms.checkers.windows import WindowsPathChecker
+
             return WindowsPathChecker(
-                path, raise_error, mode, system_ok, user_paths_ok, not_writeable, cwd_only
+                path,
+                raise_error,
+                mode,
+                system_ok,
+                user_paths_ok,
+                not_writeable,
+                cwd_only,
             )
         case "Darwin":
             from .platforms.checkers.darwin import DarwinPathChecker
+
             return DarwinPathChecker(
-                path, raise_error, mode, system_ok, user_paths_ok, not_writeable, cwd_only
+                path,
+                raise_error,
+                mode,
+                system_ok,
+                user_paths_ok,
+                not_writeable,
+                cwd_only,
             )
         case _:  # Linux and other Unix-like systems
             from .platforms.checkers.posix import PosixPathChecker
+
             return PosixPathChecker(
-                path, raise_error, mode, system_ok, user_paths_ok, not_writeable, cwd_only
+                path,
+                raise_error,
+                mode,
+                system_ok,
+                user_paths_ok,
+                not_writeable,
+                cwd_only,
             )
 
 

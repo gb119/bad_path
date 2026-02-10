@@ -16,12 +16,14 @@ class DarwinPathChecker(BasePathChecker):
     def _load_invalid_chars(self) -> None:
         """Load Darwin-specific invalid characters."""
         from bad_path.platforms.darwin import invalid_chars
+
         self._invalid_chars = invalid_chars
         self._reserved_names = []
 
     def _load_and_check_paths(self) -> None:
         """Load system and user paths, then check the current path against them."""
         from bad_path.platforms.darwin import system_paths
+
         self._system_paths = system_paths
         self._user_paths = get_user_paths()
 

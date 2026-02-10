@@ -18,12 +18,14 @@ class WindowsPathChecker(BasePathChecker):
     def _load_invalid_chars(self) -> None:
         """Load Windows-specific invalid characters and reserved names."""
         from bad_path.platforms.windows import invalid_chars, reserved_names
+
         self._invalid_chars = invalid_chars
         self._reserved_names = reserved_names
 
     def _load_and_check_paths(self) -> None:
         """Load system and user paths, then check the current path against them."""
         from bad_path.platforms.windows import system_paths
+
         self._system_paths = system_paths
         self._user_paths = get_user_paths()
 
@@ -101,7 +103,11 @@ class WindowsPathChecker(BasePathChecker):
                 if char == ":":
                     # Check if colon is part of a drive letter (e.g., C:, D:)
                     # Valid pattern: single letter followed by colon at start of path
-                    if len(path_str) >= 2 and path_str[1] == ":" and path_str[0].isalpha():
+                    if (
+                        len(path_str) >= 2
+                        and path_str[1] == ":"
+                        and path_str[0].isalpha()
+                    ):
                         # This is a valid drive letter if it's the only colon
                         if path_str.count(":") == 1:
                             continue  # This is a valid drive letter colon
