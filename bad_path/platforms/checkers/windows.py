@@ -5,7 +5,7 @@ This module provides the WindowsPathChecker class for validating paths on Window
 
 from pathlib import Path
 
-from bad_path.checker import BasePathChecker, get_user_paths
+from ...checker import BasePathChecker, get_user_paths
 
 
 class WindowsPathChecker(BasePathChecker):
@@ -17,7 +17,7 @@ class WindowsPathChecker(BasePathChecker):
 
     def _load_invalid_chars(self) -> None:
         """Load Windows-specific invalid characters and reserved names."""
-        from bad_path.platforms.windows import (  # pylint: disable=import-outside-toplevel
+        from ..windows import (  # pylint: disable=import-outside-toplevel
             invalid_chars,
             reserved_names,
         )
@@ -27,7 +27,7 @@ class WindowsPathChecker(BasePathChecker):
 
     def _load_and_check_paths(self) -> None:
         """Load system and user paths, then check the current path against them."""
-        from bad_path.platforms.windows import (  # pylint: disable=import-outside-toplevel
+        from ..windows import (  # pylint: disable=import-outside-toplevel
             system_paths,
         )
 

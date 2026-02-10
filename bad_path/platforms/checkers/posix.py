@@ -3,7 +3,7 @@
 This module provides the PosixPathChecker class for validating paths on POSIX-compliant systems.
 """
 
-from bad_path.checker import BasePathChecker, get_user_paths
+from ...checker import BasePathChecker, get_user_paths
 
 
 class PosixPathChecker(BasePathChecker):
@@ -14,7 +14,7 @@ class PosixPathChecker(BasePathChecker):
 
     def _load_invalid_chars(self) -> None:
         """Load POSIX-specific invalid characters."""
-        from bad_path.platforms.posix import (  # pylint: disable=import-outside-toplevel
+        from ..posix import (  # pylint: disable=import-outside-toplevel
             invalid_chars,
         )
 
@@ -23,7 +23,7 @@ class PosixPathChecker(BasePathChecker):
 
     def _load_and_check_paths(self) -> None:
         """Load system and user paths, then check the current path against them."""
-        from bad_path.platforms.posix import (  # pylint: disable=import-outside-toplevel
+        from ..posix import (  # pylint: disable=import-outside-toplevel
             system_paths,
         )
 
