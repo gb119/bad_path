@@ -111,11 +111,17 @@ def get_dangerous_paths() -> list[str]:
     """
     match platform.system():
         case "Windows":
-            from .platforms.windows import system_paths
+            from .platforms.windows import (
+                system_paths,
+            )  # pylint: disable=import-outside-toplevel
         case "Darwin":
-            from .platforms.darwin import system_paths
+            from .platforms.darwin import (
+                system_paths,
+            )  # pylint: disable=import-outside-toplevel
         case _:  # Linux and other Unix-like systems
-            from .platforms.posix import system_paths
+            from .platforms.posix import (
+                system_paths,
+            )  # pylint: disable=import-outside-toplevel
 
     # Merge system paths and user-defined paths using sets to avoid duplicates
     all_paths = set(system_paths) | set(_user_defined_paths)
@@ -805,7 +811,9 @@ def _create_path_checker(
     """
     match platform.system():
         case "Windows":
-            from .platforms.checkers.windows import WindowsPathChecker
+            from .platforms.checkers.windows import (  # pylint: disable=import-outside-toplevel
+                WindowsPathChecker,
+            )
 
             return WindowsPathChecker(
                 path,
@@ -817,7 +825,9 @@ def _create_path_checker(
                 cwd_only,
             )
         case "Darwin":
-            from .platforms.checkers.darwin import DarwinPathChecker
+            from .platforms.checkers.darwin import (  # pylint: disable=import-outside-toplevel
+                DarwinPathChecker,
+            )
 
             return DarwinPathChecker(
                 path,
@@ -829,7 +839,9 @@ def _create_path_checker(
                 cwd_only,
             )
         case _:  # Linux and other Unix-like systems
-            from .platforms.checkers.posix import PosixPathChecker
+            from .platforms.checkers.posix import (  # pylint: disable=import-outside-toplevel
+                PosixPathChecker,
+            )
 
             return PosixPathChecker(
                 path,
