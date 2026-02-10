@@ -97,10 +97,10 @@ No high-priority issues found.
 - **Severity**: Low
 - **Areas with missing coverage**:
   - Some error handling paths in BasePathChecker
-- **Current**: 73% coverage (merged from all platforms via Coveralls)
+- **Current**: 73% coverage (merged from all platforms via Coveralls and Codacy)
 - **Target**: 85%+ coverage
 - **Recommendation**: Add more unit tests for error handling code paths
-- **Note**: Platform-specific code (Windows, Darwin) is now properly tracked via Coveralls multi-platform coverage merging
+- **Note**: Platform-specific code (Windows, Darwin) is now properly tracked via multi-platform coverage merging with Coveralls and Codacy
 
 ---
 
@@ -134,7 +134,7 @@ No high-priority issues found.
 ### Current State
 
 - **Total Tests**: 90 (83 passed, 7 skipped on Linux)
-- **Coverage**: 73% (merged from all platforms via Coveralls)
+- **Coverage**: 73% (merged from all platforms via Coveralls and Codacy)
 - **Platforms**: Linux (primary), Windows (CI), macOS (CI)
 
 ### Coverage by Module
@@ -145,7 +145,7 @@ No high-priority issues found.
 - `bad_path/platforms/darwin.py`: Coverage tracked on macOS CI
 - `bad_path/platforms/windows.py`: Coverage tracked on Windows CI
 
-**Note**: With Coveralls integration, platform-specific code coverage is now properly tracked and merged from all CI platforms (Linux, Windows, macOS).
+**Note**: With Coveralls and Codacy integration, platform-specific code coverage is now properly tracked and merged from all CI platforms (Linux, Windows, macOS).
 
 ### Missing Test Coverage
 
@@ -238,7 +238,7 @@ No high-priority issues found.
 ### CI/CD Strengths
 
 - Comprehensive test matrix
-- Multi-platform coverage reporting via Coveralls
+- Multi-platform coverage reporting via Coveralls and Codacy
 - Automated documentation deployment
 - Automated package publishing
 - Proper use of GitHub Actions v4/v5

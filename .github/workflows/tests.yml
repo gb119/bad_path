@@ -43,6 +43,14 @@ jobs:
         file: ./coverage.xml
         fail_ci_if_error: false
 
+    - name: Upload coverage to Codacy
+      uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: ./coverage.xml
+        flag-name: ${{ matrix.os }}-py${{ matrix.python-version }}
+      continue-on-error: true
+
     - name: Upload coverage to Coveralls (parallel)
       uses: coverallsapp/github-action@cfd0633edbd2411b532b808ba7a8b5e04f76d2c8 # v2.3.4
       with:
