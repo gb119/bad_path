@@ -106,9 +106,7 @@ def test_mode_none_respects_individual_flags():
         system_path = "/etc/passwd"
 
     # mode=None with flags should work like before
-    checker = PathChecker(
-        system_path, mode=None, system_ok=True, not_writeable=True
-    )
+    checker = PathChecker(system_path, mode=None, system_ok=True, not_writeable=True)
     assert checker  # Safe with flags
 
 

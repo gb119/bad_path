@@ -188,9 +188,7 @@ def test_invalid_chars_always_dangerous():
         test_path = "/tmp/test\x00file.txt"  # nosec B108
 
     # Invalid chars should be dangerous even with all flags enabled
-    checker = PathChecker(
-        test_path, system_ok=True, user_paths_ok=True, not_writeable=True
-    )
+    checker = PathChecker(test_path, system_ok=True, user_paths_ok=True, not_writeable=True)
     assert not checker  # Still dangerous
     assert checker.has_invalid_chars
 

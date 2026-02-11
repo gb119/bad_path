@@ -353,9 +353,7 @@ class BasePathChecker(ABC):
                 self._user_paths_ok = user_paths_ok
                 self._not_writeable = not_writeable
             case _:
-                raise ValueError(
-                    f"Invalid mode '{mode}'. Must be None, 'read', or 'write'."
-                )
+                raise ValueError(f"Invalid mode '{mode}'. Must be None, 'read', or 'write'.")
 
         # Handle cwd_only flag (independent of mode)
         self._cwd_only = cwd_only
@@ -466,9 +464,7 @@ class BasePathChecker(ABC):
             # If other resolution fails, treat as dangerous
             return True
 
-    def _check_against_paths(
-        self, paths: list[str], path_obj: Path | None = None
-    ) -> bool:
+    def _check_against_paths(self, paths: list[str], path_obj: Path | None = None) -> bool:
         """Check if a path matches any in the given list.
 
         Args:
@@ -524,9 +520,7 @@ class BasePathChecker(ABC):
 
         return False
 
-    def __call__(
-        self, path: str | Path | None = None, raise_error: bool = False
-    ) -> bool:
+    def __call__(self, path: str | Path | None = None, raise_error: bool = False) -> bool:
         """Check a path for danger, with optional path reload.
 
         Note: Unlike the boolean context (which returns True for safe paths),
@@ -594,9 +588,7 @@ class BasePathChecker(ABC):
                 is_dangerous = True
 
             if is_dangerous and raise_error:
-                raise DangerousPathError(
-                    f"Path '{path}' points to a dangerous location"
-                )
+                raise DangerousPathError(f"Path '{path}' points to a dangerous location")
 
             return is_dangerous
         else:
@@ -605,9 +597,7 @@ class BasePathChecker(ABC):
             is_dangerous = self._is_dangerous()
 
             if is_dangerous and raise_error:
-                raise DangerousPathError(
-                    f"Path '{self._path}' points to a dangerous location"
-                )
+                raise DangerousPathError(f"Path '{self._path}' points to a dangerous location")
 
             return is_dangerous
 
@@ -966,6 +956,4 @@ class PathChecker:
         cwd_only: bool = False,
     ) -> BasePathChecker:
         """Create a platform-specific PathChecker instance."""
-        return _create_path_checker(
-            path, raise_error, mode, system_ok, user_paths_ok, not_writeable, cwd_only
-        )
+        return _create_path_checker(path, raise_error, mode, system_ok, user_paths_ok, not_writeable, cwd_only)

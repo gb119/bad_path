@@ -83,7 +83,7 @@ def test_windows_invalid_chars():
     if platform.system() != "Windows":
         pytest.skip("Windows-specific test")
 
-    invalid_chars = ['<', '>', ':', '"', '|', '?', '*']
+    invalid_chars = ["<", ">", ":", '"', "|", "?", "*"]
     for char in invalid_chars:
         checker = PathChecker(f"C:\\tmp\\test{char}file.txt")
         assert checker.has_invalid_chars is True, f"Character '{char}' should be invalid"
